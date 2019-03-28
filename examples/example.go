@@ -1,10 +1,3 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/jamesfcarter/s3httpfilesystem)](https://goreportcard.com/report/github.com/jamesfcarter/s3httpfilesystem)
-
-s3httpfilesystem implements the `http.FileSystem` interface allowing an S3
-bucket to be easily served over http.
-
-Example:
-```
 package main
 
 import (
@@ -22,4 +15,3 @@ func main() {
 	s3FileSystem := s3.New(endpoint, region, bucket)
 	http.ListenAndServe(":80", http.FileServer(s3FileSystem))
 }
-```
