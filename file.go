@@ -16,9 +16,13 @@ type File struct {
 	fs      *Filesystem
 	path    string
 	content *bytes.Reader
+	closed  bool
 }
 
 func (f *File) download() error {
+	if f.closed {
+		return os.ErrClosed
+	}
 	if f.content != nil {
 		return nil
 	}
@@ -51,7 +55,11 @@ func (f *File) Read(p []byte) (int, error) {
 
 // Close closes and removes a downloaded S3 object
 func (f *File) Close() error {
+	if f.closed {
+		return os.ErrClosed
+	}
 	f.content = nil
+	f.closed = true
 	return nil
 }
 
@@ -66,13 +74,13 @@ func (f *File) Seek(offset int64, whence int) (int64, error) {
 
 // Readdir returns the contents of a simulated directory of S3 objects
 func (f *File) Readdir(count int) ([]os.FileInfo, error) {
-	delimiter := "/"
-	input := as3.ListObjectsInput{
-		Bucket:    &f.fs.bucket,
-		Prefix:    &f.path,
-		Delimiter: &delimiter,
+	if f.closed {
+		return nil, os.ErrClosed
 	}
-	resp, err := f.fs.s3.ListObjects(&input)
+	resp, err := f.fs.s3.ListObjects((&as3.ListObjectsInput{}).
+		SetBucket(f.fs.bucket).
+		SetPrefix(f.path).
+		SetDelimiter("/"))
 	if err != nil {
 		return nil, err
 	}
@@ -81,6 +89,9 @@ func (f *File) Readdir(count int) ([]os.FileInfo, error) {
 
 // Stat returns the FileInfo structure describing file.
 func (f *File) Stat() (os.FileInfo, error) {
+	if f.closed {
+		return nil, os.ErrClosed
+	}
 	delimiter := "/"
 	input := as3.ListObjectsInput{
 		Bucket:    &f.fs.bucket,

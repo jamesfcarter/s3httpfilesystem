@@ -2,6 +2,8 @@ package s3httpfilesystem
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -17,7 +19,7 @@ type dirInfo struct {
 }
 
 func (fi fileInfo) Name() string {
-	return *fi.o.Key
+	return filepath.Base(*fi.o.Key)
 }
 
 func (fi fileInfo) Size() int64 {
@@ -41,7 +43,7 @@ func (fi fileInfo) Sys() interface{} {
 }
 
 func (di dirInfo) Name() string {
-	return *di.p.Prefix
+	return filepath.Base(strings.TrimSuffix(*di.p.Prefix, "/"))
 }
 
 func (di dirInfo) Size() int64 {
