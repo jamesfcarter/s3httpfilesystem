@@ -140,3 +140,42 @@ func TestRead(t *testing.T) {
 		t.Fatalf("bad content: %s\n", result)
 	}
 }
+
+func TestSeek(t *testing.T) {
+	s3f, mock, finish := setupMock(t)
+	defer finish()
+
+	testStr := "foo bar baz"
+	content := ioutil.NopCloser(bytes.NewReader([]byte(testStr)))
+
+	mock.EXPECT().
+		GetObject((&s3.GetObjectInput{}).
+			SetBucket("test").
+			SetKey("testdir/testfile.tst")).
+		Return((&s3.GetObjectOutput{}).SetBody(content), nil)
+
+	f, err := s3f.Open("/testdir/testfile.tst")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testOffset := 4
+	offset, err := f.Seek(int64(testOffset), 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if offset != int64(testOffset) {
+		t.Fatalf("unexpected offset %d\n", offset)
+	}
+
+	buf := make([]byte, 100)
+	count, err := f.Read(buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := string(buf[0:count])
+
+	if count != len(testStr)-testOffset || result != testStr[testOffset:] {
+		t.Fatalf("bad content: %s\n", result)
+	}
+}
