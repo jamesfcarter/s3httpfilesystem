@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:f0ba48dab620e6f74d351c2cec4c4dfdeb06adfa186a57d498a4b698615f8957"
+  digest = "1:fd17b9f008e2307eef9a4a018f5f83637b5ee5d32e77b556465896cb49960f50"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -38,11 +38,20 @@
     "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
     "service/s3",
+    "service/s3/s3iface",
     "service/sts",
   ]
   pruneopts = "UT"
   revision = "9000241da407010f1e20c6dcbf00d0cbc9255ff9"
   version = "v1.19.4"
+
+[[projects]]
+  digest = "1:b60efdeb75d3c0ceed88783ac2495256aba3491a537d0f31401202579fd62a94"
+  name = "github.com/golang/mock"
+  packages = ["gomock"]
+  pruneopts = "UT"
+  revision = "51421b967af1f557f93a59e0057aaf15ca02e29c"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
@@ -57,8 +66,11 @@
   input-imports = [
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/credentials",
+    "github.com/aws/aws-sdk-go/aws/request",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/s3",
+    "github.com/aws/aws-sdk-go/service/s3/s3iface",
+    "github.com/golang/mock/gomock",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -66,13 +66,10 @@ func (f *File) Seek(offset int64, whence int) (int64, error) {
 
 // Readdir returns the contents of a simulated directory of S3 objects
 func (f *File) Readdir(count int) ([]os.FileInfo, error) {
-	delimiter := "/"
-	input := as3.ListObjectsInput{
-		Bucket:    &f.fs.bucket,
-		Prefix:    &f.path,
-		Delimiter: &delimiter,
-	}
-	resp, err := f.fs.s3.ListObjects(&input)
+	resp, err := f.fs.s3.ListObjects((&as3.ListObjectsInput{}).
+		SetBucket(f.fs.bucket).
+		SetPrefix(f.path).
+		SetDelimiter("/"))
 	if err != nil {
 		return nil, err
 	}
