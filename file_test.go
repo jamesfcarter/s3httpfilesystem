@@ -3,6 +3,7 @@ package s3httpfilesystem_test
 import (
 	"bytes"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -177,5 +178,25 @@ func TestSeek(t *testing.T) {
 
 	if count != len(testStr)-testOffset || result != testStr[testOffset:] {
 		t.Fatalf("bad content: %s\n", result)
+	}
+}
+
+func TestClose(t *testing.T) {
+	s3f, _, finish := setupMock(t)
+	defer finish()
+
+	f, err := s3f.Open("/testdir/testfile.tst")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = f.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = f.Seek(1, 0)
+	if err != os.ErrClosed {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }
