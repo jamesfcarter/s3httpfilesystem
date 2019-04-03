@@ -1,6 +1,8 @@
 package s3httpfilesystem_test
 
 import (
+	"bytes"
+	"io/ioutil"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -106,5 +108,35 @@ func TestStat(t *testing.T) {
 	}
 	if fi.Size() != 123 {
 		t.Errorf("unexpected size %d\n", fi.Size())
+	}
+}
+
+func TestRead(t *testing.T) {
+	s3f, mock, finish := setupMock(t)
+	defer finish()
+
+	testStr := "foo bar baz"
+	content := ioutil.NopCloser(bytes.NewReader([]byte(testStr)))
+
+	mock.EXPECT().
+		GetObject((&s3.GetObjectInput{}).
+			SetBucket("test").
+			SetKey("testdir/testfile.tst")).
+		Return((&s3.GetObjectOutput{}).SetBody(content), nil)
+
+	f, err := s3f.Open("/testdir/testfile.tst")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	buf := make([]byte, 100)
+	count, err := f.Read(buf)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result := string(buf[0:count])
+
+	if count != len(testStr) || result != testStr {
+		t.Fatalf("bad content: %s\n", result)
 	}
 }
