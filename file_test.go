@@ -14,6 +14,8 @@ import (
 )
 
 func setupMock(t *testing.T) (*s3httpfilesystem.Filesystem, *mock_s3iface.MockS3API, func()) {
+	t.Helper()
+
 	ctrl := gomock.NewController(t)
 	mock := mock_s3iface.NewMockS3API(ctrl)
 	s3f := s3httpfilesystem.NewWithS3("test", mock)
