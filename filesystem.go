@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	as3 "github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
 // Filesystem implements the http.FileSystem interface for an S3 bucket.
@@ -33,8 +32,8 @@ func New(endpoint, region, bucket string) *Filesystem {
 	}
 }
 
-// NewWithS3 takes an S3API interface and is used for testing
-func NewWithS3(bucket string, mock s3iface.S3API) *Filesystem {
+// NewWithS3 takes an s3Interface and is used for testing
+func NewWithS3(bucket string, mock s3Interface) *Filesystem {
 	return &Filesystem{
 		s3:     mock,
 		bucket: bucket,

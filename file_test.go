@@ -10,14 +10,14 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/jamesfcarter/s3httpfilesystem"
-	"github.com/jamesfcarter/s3httpfilesystem/mock/mock_s3iface"
+	. "github.com/jamesfcarter/s3httpfilesystem/mock/mock_s3interface"
 )
 
-func setupMock(t *testing.T) (*s3httpfilesystem.Filesystem, *mock_s3iface.MockS3API, func()) {
+func setupMock(t *testing.T) (*s3httpfilesystem.Filesystem, *Mocks3Interface, func()) {
 	t.Helper()
 
 	ctrl := gomock.NewController(t)
-	mock := mock_s3iface.NewMockS3API(ctrl)
+	mock := NewMocks3Interface(ctrl)
 	s3f := s3httpfilesystem.NewWithS3("test", mock)
 	return s3f, mock, ctrl.Finish
 }
